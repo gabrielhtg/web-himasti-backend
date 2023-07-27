@@ -24,6 +24,8 @@ public class AuthService {
         }
 
         user.setToken(UUID.randomUUID().toString());
+
+        // dengan ini token akan aktif terhitung 7 hari dari saat ini
         user.setTokenExpiredAt(System.currentTimeMillis() + (1000L * 60 * 60 * 24* 7)); // 1000 * 60 detik * 60 menit * 24jam * 7 hari
         userRepository.save(user);
 

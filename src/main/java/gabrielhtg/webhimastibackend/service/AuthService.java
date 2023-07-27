@@ -20,7 +20,7 @@ public class AuthService {
         User user = userRepository.findById(request.getUsername()).orElse(null);
 
         if (user == null || !BCrypt.checkpw(request.getPassword(), user.getPassword())) {
-            return false;
+            return false; // jika password tidak sama
         }
 
         user.setToken(UUID.randomUUID().toString());

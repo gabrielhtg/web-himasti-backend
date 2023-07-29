@@ -16,13 +16,13 @@ public class RegisterUserRequestModel {
 
     private String lastName;
 
-    private Byte[] fotoProfil;
-
-    private String angkatan;
-
-    private Long tglLahir;
-
-    private String kotaLahir;
-
-    private Boolean admin;
+//    private Byte[] fotoProfil;
+//
+//    private String angkatan;
+//
+//    private Long tglLahir;
+//
+//    private String kotaLahir;
+//
+//    private Boolean admin;
 }

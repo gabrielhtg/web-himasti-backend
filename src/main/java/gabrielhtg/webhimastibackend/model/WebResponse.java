@@ -12,5 +12,7 @@ import lombok.NoArgsConstructor;
 public class WebResponse<T> {
     private T data;
 
+    private Boolean error;
+
     private String pesanError;
 }

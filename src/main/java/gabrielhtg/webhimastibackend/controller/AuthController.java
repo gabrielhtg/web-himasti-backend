@@ -26,6 +26,6 @@ public class AuthController {
             return WebResponse.<String>builder().build();
         }
 
-        return WebResponse.<String>builder().pesanError("FAIL").build();
+        return WebResponse.<String>builder().error(true).build();
     }
 }

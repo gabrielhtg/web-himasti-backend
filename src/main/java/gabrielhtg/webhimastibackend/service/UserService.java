@@ -11,12 +11,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+/*
+  * Ini adalah service yang digunakan untuk melakukan perubahan
+  * terhadap data ataupun objek yang berkaitan dengan Entity User
+ */
+
 @Service
 @Slf4j
 public class UserService {
     @Autowired
     private UserRepository userRepository;
 
+    /*
+      * Method registerUser ini digunakan untuk menambahkan user baru ke dalam database.
+      * method ini membutuhkan RegisterUserRequestModel yang digunakan sebagai template
+      * data user yang melakukan request untuk dimasukkan ke Entity user actual.
+     */
     @Transactional
     public void registerUser (RegisterUserRequestModel request) {
         if (userRepository.existsById(request.getUsername())) {
@@ -28,20 +38,27 @@ public class UserService {
         user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt())); // yang disimpan adalah password terenkripsi
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
-        user.setFotoProfil(request.getFotoProfil());
-        user.setAngkatan(request.getAngkatan());
-        user.setTglLahir(request.getTglLahir());
-        user.setKotaLahir(request.getKotaLahir());
+//        user.setFotoProfil(request.getFotoProfil());
+//        user.setAngkatan(request.getAngkatan());
+//        user.setTglLahir(request.getTglLahir());
+//        user.setKotaLahir(request.getKotaLahir());
         user.setTglDaftar(System.currentTimeMillis());
-        user.setAdmin(request.getAdmin());
+//        user.setAdmin(request.getAdmin());
 
         userRepository.save(user);
-        log.info("Ini adalah foto profilnya : %s", request.getFotoProfil());
-        log.info(String.format("Sukses register user dengan username %s isAdmin=%b", user.getUsername(), user.getAdmin()));
     }
 
     @Transactional
     public void deleteAllUsers () {
         userRepository.deleteAll();
     }
+
+    @Transactional
+    public boolean isAdmin (String request) {
+        User user = userRepository.findById(request).orElse(null);
+
+//        ketika user tidak null dan user adalah admin, maka kita akan return true
+        return (user != null) && (user.getAdmin());
+    }
+
 }

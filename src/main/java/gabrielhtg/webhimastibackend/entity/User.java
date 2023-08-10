@@ -26,7 +26,7 @@ public class User {
 
     @Lob
     @Column(name = "foto_profil")
-    private Byte[] fotoProfil;
+    private byte[] fotoProfil;
 
     private String angkatan;
 
@@ -44,5 +44,8 @@ public class User {
     @Column(name = "token_expired_at")
     private Long tokenExpiredAt;
 
-    private Boolean admin;
+    private Boolean admin = false;
+
+    @Column(name = "data_lengkap")
+    private Boolean dataLengkap;
 }

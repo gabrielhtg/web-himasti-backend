@@ -54,7 +54,7 @@ class RegisterTokenControllerTest {
     @Test
     void testGenRegisterTokenSukses() throws Exception {
         mockMvc.perform(
-                get("/himasti/api/registerToken/generate")
+                get("/api/himasti/registerToken/generate")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("username", "gabrielhtg")
                         .header("durasi", 30)
@@ -74,7 +74,7 @@ class RegisterTokenControllerTest {
     @Test
     void testGenRegisterTokenGagalUsernameTidakDitemukan() throws Exception {
         mockMvc.perform(
-                get("/himasti/api/registerToken/generate")
+                get("/api/himasti/registerToken/generate")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("username", "userSalah")
                         .header("durasi", 30)
@@ -93,7 +93,7 @@ class RegisterTokenControllerTest {
     @Test
     void testGenRegisterTokenGagalUsernameBukanAdmin() throws Exception {
         mockMvc.perform(
-                get("/himasti/api/registerToken/generate")
+                get("/api/himasti/registerToken/generate")
                         .accept(MediaType.APPLICATION_JSON)
                         .header("username", "userSalah")
                         .header("durasi", 30)

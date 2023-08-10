@@ -6,6 +6,7 @@ import gabrielhtg.webhimastibackend.entity.User;
 import gabrielhtg.webhimastibackend.model.RegisterUserRequestModel;
 import gabrielhtg.webhimastibackend.model.WebResponse;
 import gabrielhtg.webhimastibackend.repository.UserRepository;
+import gabrielhtg.webhimastibackend.security.BCrypt;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,7 +51,7 @@ class UserControllerTest {
         requestModel.setLastName("Test");
 
         mockMvc.perform(
-                post("/himasti/api/user/register")
+                post("/api/himasti/user/register")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestModel))
@@ -77,7 +78,7 @@ class UserControllerTest {
         requestModel.setLastName("Test");
 
         mockMvc.perform(
-                post("/himasti/api/user/register")
+                post("/api/himasti/user/register")
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestModel))
@@ -91,5 +92,55 @@ class UserControllerTest {
             Assertions.assertEquals("unauthorized", response.getPesanError());
             Assertions.assertNull(response.getData());
         });
+    }
+
+    @Test
+    void testRegisterUserAdmin () throws Exception {
+        RegisterUserRequestModel requestModel = new RegisterUserRequestModel();
+        requestModel.setUsername("gabriel");
+        requestModel.setPassword("agustus163");
+        requestModel.setFirstName("Gabriel");
+        requestModel.setLastName("Hutagalung");
+
+        mockMvc.perform(
+                post("/api/himasti/user/register")
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(requestModel))
+                        .header("TOKEN", "efe06ff0-b458-432c-88a9-5c268ce6b9cc")
+        ).andExpectAll(
+                status().isOk()
+        );
+
+        User user = userRepository.findById("gabriel").orElse(null);
+
+        Assertions.assertNotNull(user);
+        user.setAdmin(true);
+        userRepository.save(user);
+    }
+
+    @Test
+    public void testRegisterUserLastNameNull () throws Exception {
+       RegisterUserRequestModel requestModel = new RegisterUserRequestModel();
+       requestModel.setUsername("wilo");
+       requestModel.setPassword("wilo");
+       requestModel.setFirstName("Wilona");
+
+       mockMvc.perform(
+               post("/api/himasti/user/register")
+                       .content(objectMapper.writeValueAsString(requestModel))
+                       .accept(MediaType.APPLICATION_JSON)
+                       .contentType(MediaType.APPLICATION_JSON)
+                       .header("TOKEN", "e82e41ce-92e7-4e54-9767-e84c9b83fa1d")
+       ).andExpectAll(
+               status().isOk()
+       ).andDo(result -> {
+           WebResponse<String> webResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<WebResponse<String>>() {
+           });
+
+           Assertions.assertEquals("OK", webResponse.getData());
+           Assertions.assertFalse(webResponse.getError());
+           Assertions.assertNull(webResponse.getPesanError());
+       });
     }
 }

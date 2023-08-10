@@ -16,19 +16,47 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Transactional
-    public boolean Login (UserLoginRequestModel request) {
+    public String login (UserLoginRequestModel request) {
         User user = userRepository.findById(request.getUsername()).orElse(null);
 
+//        ! Kalau user null atau password yang dimasukkan user tidak tepat maka akan return false
         if (user == null || !BCrypt.checkpw(request.getPassword(), user.getPassword())) {
-            return false; // jika password tidak sama
+            return null; // jika password tidak sama
         }
 
-        user.setToken(UUID.randomUUID().toString());
+//        ! Session token yang disimpan adalah data browser digabung dengan uuid kemudian dienkripsi
+        String token = UUID.randomUUID().toString();
+        user.setToken(token);
 
-        // dengan ini token akan aktif terhitung 7 hari dari saat ini
-        user.setTokenExpiredAt(System.currentTimeMillis() + (1000L * 60 * 60 * 24* 7)); // 1000 * 60 detik * 60 menit * 24jam * 7 hari
+        // dengan ini token akan aktif terhitung 1 hari dari saat ini
+        user.setTokenExpiredAt(System.currentTimeMillis() + (1000L * 60 * 60 * 24)); // 1000 * 60 detik * 60 menit * 24jam * x hari
         userRepository.save(user);
 
-        return true;
+        return token;
+    }
+
+    @Transactional
+    public boolean logout (String username) {
+        User user = userRepository.findById(username).orElse(null);
+
+        if (user != null) {
+            user.setTokenExpiredAt(null);
+            user.setToken(null);
+            userRepository.save(user);
+            return true;
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public boolean isLogin (String username, String sessionToken) {
+        User user = userRepository.findById(username).orElse(null);
+
+        if (user != null && user.getToken() != null && user.getToken().equals(sessionToken)) {
+            return (user.getTokenExpiredAt() > System.currentTimeMillis());
+        }
+
+        return false;
     }
 }
